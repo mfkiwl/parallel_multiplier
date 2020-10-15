@@ -1,0 +1,33 @@
+# ignore all files, then all the required ones
+*
+
+# allow for files nested within directories
+!*/
+
+# allow for hardware description packages file
+!*.xsa
+
+# allow for constraint file
+!/*srcs/constrs*/**/*.xdc
+
+# allow for bitstream and ila probes file
+!*.bit
+!*.ltx
+
+# ignore all the debug related files
+*debug*
+
+# allow for block design file
+!*.bd
+
+# ignore files under separate ip files
+/*srcs/**/ip/*
+
+# allow for hdl files
+!/*srcs/**/*.v
+
+# allow for .gitignore files
+!.gitignore
+
+# alow for README.md files
+!README.md
