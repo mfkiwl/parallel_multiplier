@@ -29,5 +29,8 @@
 # allow for .gitignore files
 !.gitignore
 
+# allow for license file
+!LICENSE
+
 # alow for README.md files
 !README.md
