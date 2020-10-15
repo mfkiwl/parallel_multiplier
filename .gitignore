@@ -11,8 +11,8 @@
 !/*srcs/constrs*/**/*.xdc
 
 # allow for bitstream and ila probes file
-!*.bit
-!*.ltx
+# !*.bit
+# !*.ltx
 
 # ignore all the debug related files
 *debug*
