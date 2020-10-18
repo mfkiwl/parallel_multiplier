@@ -22,25 +22,22 @@
 
 
 module test_top(
-	input clk,
+	input clkin,
 	input resetn);
 	
 	localparam WIDTH = 8;
 	
 	wire [WIDTH*2-1:0] prod;
 	
-	wire clkout;
+	wire clk;
 	wire reset;
 	
 	reg [WIDTH-1:0] a;
 	reg [WIDTH-1:0] b;
 	
-	wire [31:0] dds_out;
-	
-	assign clkout = clk;
 	assign reset = ~resetn;
 	
-	always @(posedge clkout) begin
+	always @(posedge clk) begin
 		if (reset) begin
 			a <= 0;
 			b <= 0;
@@ -53,16 +50,50 @@ module test_top(
 	para_mult i_para_mult (
 		.a(a),
 		.b(b),
-		.clk(clkout),
+		.clk(clk),
 		.reset(reset),
 		.clken(1'b1),
 		.prod(prod));
 		
+	wire clkfbout;
+	wire clkfbin;
+	wire locked;
+	wire pwrdwn;
+	wire clkout;
+	MMCME2_BASE #(
+		.BANDWIDTH("OPTIMIZED"),
+		.CLKFBOUT_MULT_F(9.0),
+		.CLKFBOUT_PHASE(0.0),
+		.CLKIN1_PERIOD(8.0),
+		.CLKOUT0_DIVIDE_F(7.5),
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT0_PHASE(0.0),
+		.CLKOUT4_CASCADE("FALSE"),
+		.DIVCLK_DIVIDE(1),
+		.REF_JITTER1(0.0),
+		.STARTUP_WAIT("FALSE"))
+	i_mmcme2_base (
+		.CLKOUT0(clkout),
+		.CLKFBOUT(clkfbout),
+		.CLKFBIN(clkfbin),
+		.CLKIN1(clkin),
+		.LOCKED(locked),
+		.PWRDWN(pwrdwn),
+		.RST(reset));
+		
+	BUFH i_bufh (
+		.O(clkfbin),
+		.I(clkfbout));
+		
+	BUFH i_bufg (
+		.O(clk),
+		.I(clkout));
 	
 	ila_0 i_ila (
-		.clk(clkout),
+		.clk(clk),
 		.probe0(prod),
 		.probe1(a),
-		.probe2(b));
+		.probe2(b),
+		.probe3(reset));
 		
 endmodule

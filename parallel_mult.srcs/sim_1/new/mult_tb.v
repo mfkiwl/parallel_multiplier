@@ -42,6 +42,8 @@ module mult_tb( );
 		reset = 1;
 		clken = 1;
 		#100 reset = 0;
+		#200 reset = 1;
+		#1 reset = 0;
 	end
 	
 	initial begin
@@ -52,6 +54,7 @@ module mult_tb( );
 			b = b + 1;
 		end
 	end
+	
 
 	para_mult i_para_mult (
 		.a(a),

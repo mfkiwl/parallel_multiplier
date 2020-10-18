@@ -49,23 +49,24 @@ module para_mult #(
 	genvar i;
 	generate
 	for (i = 0; i < WIDTH_B; i = i + 1) begin: part_mult
+	reg [WIDTH_A-1:0] a_d_d;
 		if (i == 0) begin
 			assign tmp_sum[i] = a * b[i];
 		end else if (i == (PIPE_POINT + 1)) begin
 			// Use pipelined sum of partial right after the pipeline point
 			// Also use the pipelined multiplicand for synchronization
-			assign tmp_half_sum[i] = tmp_sum_3_d ^ a_d * b_d[i];
+			assign tmp_half_sum[i] = tmp_sum_3_d ^ (a_d * b_d[i]);
 			carry_8bit i_carry_8bit (.DI(tmp_sum_3_d), .S(tmp_half_sum[i]),
 				.O(tmp_sum[i][WIDTH_A-1:0]), .cout(tmp_sum[i][WIDTH_A]),
 				.CYINIT(0), .CI(0));
 		end else if (i > (PIPE_POINT + 1)) begin
 			// Pipelined multiplicand is used after for synchronization
-			assign tmp_half_sum[i] = tmp_sum[i-1][WIDTH_A:1] ^ a_d * b_d[i];
+			assign tmp_half_sum[i] = tmp_sum[i-1][WIDTH_A:1] ^ (a_d * b_d[i]);
 			carry_8bit i_carry_8bit (.DI(tmp_sum[i-1][WIDTH_A:1]),
 				.S(tmp_half_sum[i]), .O(tmp_sum[i][WIDTH_A-1:0]),
 				.cout(tmp_sum[i][WIDTH_A]), .CYINIT(0), .CI(0));
 		end else begin
-			assign tmp_half_sum[i] = tmp_sum[i-1][WIDTH_A:1] ^ a * b[i];
+			assign tmp_half_sum[i] = tmp_sum[i-1][WIDTH_A:1] ^ (a * b[i]);
 			carry_8bit i_carry_8bit (.DI(tmp_sum[i-1][WIDTH_A:1]),
 				.S(tmp_half_sum[i]), .O(tmp_sum[i][WIDTH_A-1:0]),
 				.cout(tmp_sum[i][WIDTH_A]), .CYINIT(0), .CI(0));
@@ -81,7 +82,7 @@ module para_mult #(
 		if (reset) begin
 			prod <= 0;
 		end else if (clken) begin
-			prod <= {prod_s[WIDTH_A+WIDTH_B-1:PIPE_POINT+1], prod_3_d};
+			prod <= {prod_s[WIDTH_A+WIDTH_B-1:PIPE_POINT+1],prod_3_d};
 		end
 	end
 	
